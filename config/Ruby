@@ -1,0 +1,7 @@
+sinatra
+sinatra-contrib
+rqrcode_png
+active_record
+rubyzip
+
+sudo ruby main.rb -p 80 -e production

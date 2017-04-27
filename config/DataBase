@@ -1,0 +1,4 @@
+create database jjrc;
+use jjrc;
+create table qr_codes(id INT UNSIGNED,time INT UNSIGNED,PRIMARY KEY(id));
+create table devices(id VARCHAR(255),PRIMARY KEY(id));

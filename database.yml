@@ -1,0 +1,7 @@
+development:
+  adapter: mysql2
+  database: jjrc
+  host: localhost
+  username: root
+  password: wangshaohaO1
+  encoding: utf8
