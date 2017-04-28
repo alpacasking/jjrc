@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 require 'sinatra'
+require "sinatra/config_file"
 require 'sinatra/reloader'
 require 'rqrcode'
 require 'rqrcode_png'
@@ -12,6 +13,7 @@ require 'rubygems'
 require 'zip'
 require 'fileutils'
 
+config_file './config/sinatra_config.yml'
 # DB設定ファイルの読み込み
 ActiveRecord::Base.configurations = YAML.load_file('./database.yml')
 ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations['development'])
@@ -26,6 +28,9 @@ $codes=Array.new
 $code_number = 0
 $isCoding = false
 $isSaved = false
+$isSaving = false
+$isFinished = false
+
 #$isDownloading = false
 
 ACTIVE_TIME = 5
@@ -46,6 +51,7 @@ end
 
 post '/Coding' do
     $isSaved=false
+    $isSaving=false
     $codes.clear
     $code_number = params[:code_number].to_i
     for i in 1..$code_number
@@ -56,12 +62,15 @@ post '/Coding' do
         $codes.push(randomCode)
     end
     #puts $codes.length
+    @title = "二维码生成完毕"
     erb:save
 end
 
 post '/Saving' do
-    if(!$isSaved) 
-        $isSaved=true
+    if(!$isSaving&&!$isSaved) 
+        $isSaving=true
+        $isSaved = false
+        $isFinished = false
         FileUtils.cd('./QRImage')
         FileUtils.rm(Dir.glob('*.*'))
         FileUtils.cd('..')
@@ -87,13 +96,30 @@ post '/Saving' do
                 zipfile.add(file.sub(directory, ''), file)
             end
         end
+        $isSaved = true
+        $isSaving = false
+        @title = "图片保存完毕"
+        erb:download
+    elsif($isSaving&&!$isSaved)
+        @title = "图片保存中"
+        erb:save
+    elsif(!$isSaving&&$isSaved)
+        @title = "图片保存完毕"
+        erb:download
     end
-    erb:download
+    
 end
 
 post '/Download' do
-    if File.exist?("./QRImage/QRImage.zip")
+    if File.exist?("./QRImage/QRImage.zip")&&$isFinished
         send_file("./QRImage/QRImage.zip",:filename => "QRImage.zip")
+    elsif File.exist?("./QRImage/QRImage.zip")&&!$isFinished
+        @title = "图片压缩完毕"
+        $isFinished = true
+        erb:download  
+    else
+        @title = "图片压缩中请稍候"
+        erb:download  
     end
     #$isDownloading = false
 end
