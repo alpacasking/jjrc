@@ -29,7 +29,6 @@ $code_number = 0
 $isCoding = false
 $isSaved = false
 $isSaving = false
-$isFinished = false
 
 #$isDownloading = false
 
@@ -111,12 +110,8 @@ post '/Saving' do
 end
 
 post '/Download' do
-    if File.exist?("./QRImage/QRImage.zip")&&$isFinished
+    if File.exist?("./QRImage/QRImage.zip")
         send_file("./QRImage/QRImage.zip",:filename => "QRImage.zip")
-    elsif File.exist?("./QRImage/QRImage.zip")&&!$isFinished
-        @title = "图片压缩完毕"
-        $isFinished = true
-        erb:download  
     else
         @title = "图片压缩中请稍候"
         erb:download  
