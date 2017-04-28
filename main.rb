@@ -26,7 +26,7 @@ $codes=Array.new
 $code_number = 0
 $isCoding = false
 $isSaved = false
-$isDownloading = false
+#$isDownloading = false
 
 ACTIVE_TIME = 5
 =begin
@@ -41,7 +41,7 @@ end
 =end
 
 get '/Edit' do
-   erb:index
+   erb:code
 end
 
 post '/Coding' do
@@ -56,7 +56,7 @@ post '/Coding' do
         $codes.push(randomCode)
     end
     #puts $codes.length
-    erb:index
+    erb:save
 end
 
 post '/Saving' do
@@ -88,16 +88,16 @@ post '/Saving' do
             end
         end
     end
-    erb:index
+    erb:download
 end
 
 post '/Download' do
     if File.exist?("./QRImage/QRImage.zip")
         send_file("./QRImage/QRImage.zip",:filename => "QRImage.zip")
     end
-    $isDownloading = false
-    erb:index
+    #$isDownloading = false
 end
+
 
 =begin
 -3:错误的二维码

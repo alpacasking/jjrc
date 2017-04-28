@@ -1,0 +1,18 @@
+h1{
+    font-size:48px;
+    color:#000;     
+}
+
+input#submit_button {
+    padding: 15px 40px;
+    font-size: 24px;
+    background-color: #000;
+    color: #fff;
+    border-style: none;
+}
+
+input#text {
+    width:250px;
+    height:35px;
+    font-size:24px;
+}
