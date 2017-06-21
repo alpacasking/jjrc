@@ -5,3 +5,4 @@ development:
   username: root
   password: wangshaohaO1
   encoding: utf8
+  pool: 20
