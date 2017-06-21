@@ -24,6 +24,9 @@ end
 class Device < ActiveRecord::Base
 end
 
+class User < ActiveRecord::Base
+end
+
 $codes=Array.new
 $code_number = 0
 $isCoding = false
@@ -145,6 +148,57 @@ post '/' do
             device.id = params[:DeviceID]
             device.save
         end
+    end
+    responseText
+end
+
+#"success"
+#"account_overlap"
+#"account_not_existed"
+#others
+post '/user' do
+    #puts params[:QRCode]
+    #puts params[:DeviceID]
+    responseText = ""
+    if(params[:type] == "Login")
+        if(User.find_by(account:params[:account],password:params[:password]) != nil)
+            responseText ="success"
+        else
+            responseText="account_not_existed"
+        end
+    elsif(params[:type] == "Register")
+        if(User.find_by(account:params[:account]) != nil)
+            responseText ="account_overlap"
+        else
+            responseText = "success"
+            user = User.new
+            user.account = params[:account]
+            user.password = params[:password]
+            user.score = 0
+            user.save
+        end
+    elsif(params[:type] == "AutoLogin")
+        if(User.find_by(account:params[:account],password:params[:password]) != nil)
+            users = User.order("score DESC").limit(100).select(:account,:score)
+            responseText=users.to_json(:root => false)
+        else
+            responseText="autologin_fail"
+        end
+    end
+    
+    responseText
+end
+
+post '/score' do
+    #puts params[:QRCode]
+    #puts params[:DeviceID]
+    responseText = ""
+    item = User.find_by(account:params[:account])
+    if(item!=nil)
+        item.update_attribute(:score,item.score+(params[:score].to_i))
+        responseText="success"
+    else
+        responseText="fail"
     end
     responseText
 end
